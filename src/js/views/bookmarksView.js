@@ -1,5 +1,5 @@
 import View from './View.js';
-import PreviewView from './previewView.js';
+
 import icons from 'url:../../img/icons.svg'; // Pacel 2
 import previewView from './previewView.js';
 

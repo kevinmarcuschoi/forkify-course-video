@@ -13,6 +13,7 @@ export const state = {
     page: 1,
   },
   bookmarks: [],
+  shoppingList: [],
 };
 
 const createRecipeObject = function (data) {
@@ -115,45 +116,47 @@ export const deleteBookmark = function (id) {
   persistBookmarks();
 };
 
-const init = function () {
-  const storage = localStorage.getItem('bookmarks');
-  if (storage) state.bookmarks = JSON.parse(storage);
+const persistShoppingList = function () {
+  localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
 };
 
-init();
+export const addIngredient = function (item) {
+  // Add boomark
+  state.shoppingList.push(item);
+  persistShoppingList();
+};
+
+export const removeIngredient = function (itemDescription) {
+  // get index of item
+  const index = state.shoppingList.indexOf(itemDescription);
+  // remove item from model state if it exists
+  if (index > -1) state.shoppingList.splice(index, 1);
+
+  // update view
+  persistShoppingList();
+};
+
+const init = function () {
+  const bookmarkStorage = localStorage.getItem('bookmarks');
+  if (bookmarkStorage) state.bookmarks = JSON.parse(bookmarkStorage);
+  const shoppingListStorage = localStorage.getItem('shoppingList');
+  if (shoppingListStorage) state.shoppingList = JSON.parse(shoppingListStorage);
+};
 
 const clearBookmarks = function () {
   localStorage.clear('bookmarks');
 };
 // clearBookmarks();
 
+export const clearShoppingList = function () {
+  localStorage.clear('shoppingList');
+};
+
+init();
+
 export const uploadRecipe = async function (newRecipe) {
   try {
-    const ingredients = Object.entries(newRecipe)
-      .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
-      .map(ing => {
-        const ingArr = ing[1].split(',').map(el => el.trim());
-        if (ingArr.length !== 3)
-          throw new Error(
-            'Wrong ingredient format! Please use the correct format :)'
-          );
-        const [quantity, unit, description] = ingArr;
-        return { quantity: quantity ? +quantity : null, unit, description };
-      });
-
-    console.log(newRecipe);
-
-    const recipe = {
-      title: newRecipe.title,
-      publisher: newRecipe.publisher,
-      source_url: newRecipe.sourceUrl,
-      image_url: newRecipe.image,
-      servings: +newRecipe.servings,
-      cooking_time: +newRecipe.cookingTime,
-      ingredients,
-    };
-
-    const data = await AJAX(`${API_URL}?key=${KEY}`, recipe);
+    const data = await AJAX(`${API_URL}?key=${KEY}`, newRecipe);
     state.recipe = createRecipeObject(data);
     addBookmark(state.recipe);
   } catch (err) {

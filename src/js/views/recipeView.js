@@ -4,6 +4,8 @@ import icons from 'url:../../img/icons.svg'; // Pacel 2
 import { Fraction } from 'fractional';
 
 class RecipeView extends View {
+  _ingredientNumber = 0;
+
   _parentElement = document.querySelector('.recipe');
   _errorMessage = 'We could not find that recipe. Please try another one!';
   _message = '';
@@ -27,6 +29,13 @@ class RecipeView extends View {
       const btn = e.target.closest('.btn--bookmark');
       if (!btn) return;
       handler();
+    });
+  }
+
+  addHandlerAddIngredient(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const ingredientID = e.target.closest('.btn--tiny').id;
+      handler(ingredientID);
     });
   }
 
@@ -126,7 +135,7 @@ class RecipeView extends View {
     `;
   }
 
-  _generateMarkupIngredient(ing) {
+  _generateMarkupIngredient(ing, num) {
     return `
       <li class="recipe__ingredient">
         <svg class="recipe__icon">
@@ -140,6 +149,7 @@ class RecipeView extends View {
         <span class="recipe__unit">${ing.unit}</span>
           ${ing.description}
         </div>
+        <button id="${num}" type="button" class="btn--tiny">+</button>
       </li>
     `;
   }

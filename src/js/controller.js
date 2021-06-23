@@ -1,5 +1,6 @@
 import * as model from './model.js';
 import { MODAL_CLOSE_SEC } from './config.js';
+import { MODAL_RESET_SEC } from './config.js';
 import recipeView from './views/recipeView.js';
 
 // import icons from '../img/icons.svg'; // Pacel 1
@@ -12,6 +13,8 @@ import bookmarksView from './views/bookmarksView.js';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import addRecipeView from './views/addRecipeView.js';
+
+import shoppingListView from './views/shoppingListView.js';
 
 // if (module.hot) {
 //   module.hot.accept();
@@ -120,15 +123,40 @@ const controlAddRecipe = async function (newRecipe) {
 
     // change ID in URL
     window.history.pushState(null, '', `#${model.state.recipe.id}`);
-
-    // close form window
-    setTimeout(function () {
-      addRecipeView.hideWindow();
-    }, MODAL_CLOSE_SEC * 1000);
   } catch (err) {
     console.error('****', err);
     addRecipeView.renderError(err.message);
+  } finally {
+    // close form window
+    setTimeout(function () {
+      addRecipeView.hideWindow();
+    }, MODAL_CLOSE_SEC * 1000).setTimeout(function () {
+      addRecipeView.renderForm();
+    }, MODAL_RESET_SEC * 1000);
+
+    // Needs a delay because overlay changes before message fades
   }
+};
+
+const controlAddIngredient = function (ingID) {
+  model.addIngredient(model.state.recipe.ingredients[ingID].description);
+  shoppingListView.render(model.state.shoppingList);
+};
+
+const controlShoppingList = function () {
+  shoppingListView.render(model.state.shoppingList);
+};
+
+const clearShoppingList = function () {
+  model.clearShoppingList();
+  model.state.shoppingList = [];
+  shoppingListView.render(model.state.shoppingList);
+};
+
+const removeShoppingListItem = function (itemDescription) {
+  console.log('remove item: ' + itemDescription);
+  model.removeIngredient(itemDescription);
+  shoppingListView.render(model.state.shoppingList);
 };
 
 const init = function () {
@@ -136,9 +164,14 @@ const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
+  recipeView.addHandlerAddIngredient(controlAddIngredient);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   addRecipeView.addHandlerUpload(controlAddRecipe);
+
+  shoppingListView.addHandlerClear(clearShoppingList);
+  shoppingListView.addHandlerRender(controlShoppingList);
+  shoppingListView.addHandlerRemoveItem(removeShoppingListItem);
 };
 
 init();

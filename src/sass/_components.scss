@@ -142,6 +142,10 @@
     transform: translateY(-1px);
   }
 
+  &:active {
+    color: whitesmoke;
+  }
+
   &:active svg {
     fill: $color-grad-2;
     transform: translateY(0);

@@ -34,7 +34,9 @@ class RecipeView extends View {
 
   addHandlerAddIngredient(handler) {
     this._parentElement.addEventListener('click', function (e) {
-      const ingredientID = e.target.closest('.btn--tiny').id;
+      const btn = e.target.closest('.btn--tiny');
+      if (!btn) return;
+      const ingredientID = btn.id;
       handler(ingredientID);
     });
   }

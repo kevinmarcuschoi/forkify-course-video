@@ -1,8 +1,7 @@
 import icons from 'url:../../img/icons.svg'; // Pacel 2
 
 export default class View {
-  _data; 
-  _generateMarkup();
+  _data;
 
   // JSDOC.app for reference
 

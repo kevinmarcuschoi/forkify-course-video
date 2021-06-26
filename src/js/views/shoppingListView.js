@@ -23,11 +23,12 @@ class ShoppingListView extends View {
     this._parentElement.addEventListener('click', function (e) {
       const btn = e.target.closest('.buttonRemoveItem');
       if (!btn) return;
-      // const itemDescription = btn.parentNode.textContent.slice(1, -2);
-      const itemElement = btn.parentNode.parentNode.querySelector(
+      console.log(btn.parentNode);
+      const itemElement = btn.parentNode.querySelector(
         '.shoppingItemDescription'
       );
-      const itemDescription = itemElement.textContent.slice(1);
+
+      const itemDescription = itemElement.textContent;
       handler(itemDescription);
     });
   }
@@ -42,11 +43,11 @@ class ShoppingListView extends View {
     return markup;
   }
 
-  _generateItemMarkup(item) {
+  _generateItemMarkup(item, index) {
     return `
         <div>    
           <input type="checkbox" class="shoppingListControls">
-          <h4 class="shoppingItemDescription">・${item}</h4>
+          <h4 class="shoppingItemDescription">${item}</h4>
           <button class="shoppingListControls buttonRemoveItem">✕</button>
         </div>
       `;
